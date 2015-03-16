@@ -6,9 +6,10 @@ define(function () {
       history: [],
       index: -1
     },
+    hasInited = false,
     $ = {
       slice: [].slice,
-      makeArray: function makeArray(obj) {
+      makeArray: function(obj) {
         var ret = [];
         if (obj !== null) {
           var i = obj.length;
@@ -36,7 +37,17 @@ define(function () {
           parentNode = parentNode.parentNode;
         }
       },
-      ajax: function ajax(arr, callback, showMask) {
+      siblings: function(node) {
+        function getChildren(n, skipMe){
+          var r = [];
+          for ( ; n; n = n.nextSibling )
+            if ( n.nodeType == 1 && n != skipMe)
+              r.push( n );
+          return r;
+        };
+        return getChildren(node.parentNode.firstChild, node);
+      },
+      ajax: function(arr, callback, showMask) {
         function oneAjax(options) {
           var xhr = new XMLHttpRequest(),
             method = (options.method || 'get').toUpperCase(),
@@ -139,42 +150,93 @@ define(function () {
         })
 
       },
-      getState: function getState(hash) {
-        var myHash = hash || location.hash,
-          arr = myHash.split('?'),
-          pageId = arr[0].replace(/^#/, '').replace(/\.html$/, ''),
-          rtv = {
-            pageId: pageId,
-            //title: pageId,
-            href: pageId + '.html' + (arr[1] ? '?' + arr[1] : ''),
-            url: '#' + pageId + (arr[1] ? '?' + arr[1] : ''),
-            query: {}
-          };
+      getState: function(hash) {
+        var rtv = {},
+          arr,
+          arr1;
+        hash = hash || location.hash;
 
+        if (/^#\w+/.test(hash)) {
+          rtv.action = 'anchor';
+          rtv.anchor = hash.slice(1);
+        } else if (/^#!\//.test(hash)) {
+          rtv.url = hash;
+          rtv.action = 'pageId';
+          hash = hash.slice(3);
+          arr = hash.split('?');
+          rtv.pageId = arr[0];
 
-        if (arr[1]) {
-          arr[1].replace(
-            new RegExp("([^?=&]+)(=([^&]*))?", "g"),
-            function ($0, $1, $2, $3) {
-              rtv.query[$1] = unescape($3);
+          if (arr[1]) {
+            arr1 = arr[1].split('#');
+            /// arr1.replace()
+            arr1[0].replace(
+              new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+              function ($0, $1, $2, $3) {
+                rtv.query[$1] = unescape($3);
+              }
+            );
+            if (arr1[1]) {
+              rtv.anchor = arr[1];
             }
-          );
+          }
+        } else {
+          rtv.action = 'pageUrl';
+          rtv.pageUrl = hash;
+          arr = hash.split('?');
+          rtv.pageName = arr[0];
+          if (arr[0]) {
+            rtv.pageId = arr[0].split('.').slice(0, -1).join('.');
+            rtv.url = '#!/' + rtv.pageId + (arr[1] ? '?' + arr[1] : '');
+          }
+          if (arr[1]) {
+            arr1 = arr[1].split('#');
+            /// arr1.replace()
+            arr1[0].replace(
+              new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+              function ($0, $1, $2, $3) {
+                rtv.query[$1] = unescape($3);
+              }
+            );
+            if (arr1[1]) {
+              rtv.anchor = arr[1];
+            }
+          }
         }
+        //var myHash = hash || location.hash,
+        //  arr = myHash.split('?'),
+        //  pageId = arr[0].replace(/^#/, '').replace(/\.html$/, ''),
+        //  rtv = {
+        //    pageId: pageId,
+        //    //title: pageId,
+        //    href: pageId + '.html' + (arr[1] ? '?' + arr[1] : ''),
+        //    url: '#' + pageId + (arr[1] ? '?' + arr[1] : ''),
+        //    query: {}
+        //  };
+        //
+        //
+        //if (arr[1]) {
+        //  arr[1].replace(
+        //    new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+        //    function ($0, $1, $2, $3) {
+        //      rtv.query[$1] = unescape($3);
+        //    }
+        //  );
+        //}
         return rtv;
       },
-      replaceState: function replaceState(state, title, url) {
+      replaceState: function(state, title, url) {
         title = title || state.title;
         document.title = title;
         url = url || state.url;
         history.replaceState(state, title, url);
       },
-      pushState: function pushState(state, title, url) {
+      pushState: function(state, title, url) {
         title = title || state.title;
         document.title = title;
         url = url || state.url;
         history.pushState(state, title, url);
       },
-      switchPage: function switchPage(state, toPageId, toPageIndex, noPush) {
+      switchPage: function(state, toPageId, toPageIndex, noPush) {
         state.time = new Date();
         var formPageId = oHistory.history[oHistory.index],
           elFromPage = document.getElementById(formPageId),
@@ -235,7 +297,7 @@ define(function () {
         oHistory.index = toPageIndex;
         visiter.push(state);
       },
-      makeFrag: function makeFrag(str) {
+      makeFrag: function(str) {
         var frag = document.createDocumentFragment(),
           div = document.createElement("div");
         div.innerHTML = str;
@@ -245,7 +307,7 @@ define(function () {
         str = frag;
         return $.makeArray(str);
       },
-      append: function append(el, str) {
+      append: function(el, str) {
         $.makeFrag(str).forEach(function (n) {
           el.appendChild(n);
         });
@@ -254,14 +316,14 @@ define(function () {
     header = document.querySelector('body > header h1'),
     elPages = document.getElementsByClassName('page'),
     hash = location.hash,
-    state = hash && $.getState(hash),
+    stateByHash = hash && $.getState(hash),
     elMask = (function() {
       var elMask = document.getElementById('mask');
       if (!elMask) {
         $.append(document.body, '<div id="mask" class="mask"><i class="loading"></i></div>');
         elMask = document.getElementById('mask');
       }
-      return document.getElementById('mask');
+      return elMask;
     }()),
     visiter = [],
     animateend = function () {
@@ -302,6 +364,9 @@ define(function () {
       pageOut: []
     },
     app = {
+      pageRule: '#!/', // '#!/pageId?id=123&test=test#bbb'
+      hashRule: '#',   // '#aaa'
+      pageUrlRule: '',    // 'pageUrl?id=123&test=test#aaa'
       pageClassName: 'slide',
       on: function (eventName, pageName, callback) {
         var args = arguments;
@@ -346,88 +411,94 @@ define(function () {
       bindEvent: function() {
       },
       init: function () {
-        var self = this;
-        self.bindEvent();
-        if (hash) {
-          $.slice.call(elPages).forEach(function (page, i) {
-            var id = page.id;
-            if (id === state.pageId) {
-              oHistory.index = i;
-              return false;
+        hasInited = true;
+        var self = this,
+          initOk = function() {
+            $.slice.call(elPages).forEach(function (page, i) {
+              var id = page.id;
+              if (!page.getAttribute('data-title')) {
+                page.setAttribute('data-title',  document.title);
+              }
+              if (i === oHistory.index) {
+                page.classList.remove('out');
+                page.classList.add('in');
+                events.pageFirstInit.forEach(function (n) {
+                  if (n.pageName === id || n.pageName === void(0) || n.pageName === null) {
+                    n.callback(page);
+                  }
+                });
+                events.pageInit.forEach(function (n) {
+                  if (n.pageName === id || n.pageName === void(0) || n.pageName === null) {
+                    n.callback(page);
+                  }
+                });
+              } else {
+                page.classList.remove('in');
+                page.classList.add('out');
+              }
+              oHistory.history.push(id);
+              page.addEventListener("webkitAnimationEnd", animateend);
+              page.addEventListener("webkitAnimationStart", animatestart);
+            });
+            if (!stateByHash) {
+              stateByHash = $.getState('#!/' + oHistory.history[0]);
             }
-          });
+            stateByHash.time = new Date();
+            stateByHash.title = document.title;
+            visiter.push(stateByHash);
+            $.replaceState(stateByHash);
+          };
+        self.bindEvent();
+        if (stateByHash.action) {
+          switch (stateByHash.action) {
+            case 'pageId':
+              $.slice.call(elPages).forEach(function (page, i) {
+                var id = page.id;
+                if (id === stateByHash.pageId) {
+                  oHistory.index = i;
+                  return false;
+                }
+              });
+              initOk();
+              break;
+            case 'anchor':
+              oHistory.index = 0;
+              initOk();
+              break;
+            case 'pageUrl':
+              var toPageId = stateByHash.pageId;
+              $.ajax({
+                url: stateByHash.href,
+                success: function (content) {
+                  var doAjaxRender = ajaxRender;
+                  events.ajaxRender.forEach(function (n) {
+                    if (n.pageName === toPageId) {
+                      doAjaxRender = n.callback;
+                    } else if (n.pageName === void(0) || n.pageName === null) {
+                      n.callback(document.getElementById(toPageId));
+                    }
+                  });
+                  doAjaxRender(content, function (content) {
+                    var titleContent = /<title[^>]*?>([\s\S]*?)<\/title>/.exec(content),
+                      bodyContent = /<body[^>]*?>([\s\S]*?)<\/body>/.exec(content);
+
+                    if (titleContent) {
+                      document.title = titleContent[1];
+                    }
+
+                    $.append(document.body, bodyContent ? bodyContent[1] : content );
+
+                    elMask.style.visibility = 'hidden';
+                    initOk();
+                  });
+                }
+              }, function () {
+              }, true);
+              break;
+          }
         } else {
           oHistory.index = 0;
-        }
-        if (oHistory.index === -1) {
-          var toPageId = state.pageId;
-          $.ajax({
-            url: state.href,
-            success: function (content) {
-              var doAjaxRender = ajaxRender;
-              events.ajaxRender.forEach(function (n) {
-                if (n.pageName === toPageId) {
-                  doAjaxRender = n.callback;
-                } else if (n.pageName === void(0) || n.pageName === null) {
-                  n.callback(document.getElementById(toPageId));
-                }
-              });
-              doAjaxRender(content, function (content) {
-                var titleContent = /<title[^>]*?>([\s\S]*?)<\/title>/.exec(content),
-                  bodyContent = /<body[^>]*?>([\s\S]*?)<\/body>/.exec(content);
-
-                if (titleContent) {
-                  document.title = titleContent[1];
-                }
-                //document.getElementById(toPageId).setAttribute('data-title', titleContent ? titleContent[1] : document.title );
-
-                $.append(document.body, bodyContent ? bodyContent[1] : content );
-
-                elMask.style.visibility = 'hidden';
-                self.init();
-                //oHistory.history.push(toPageId);
-                //var page = document.getElementById(toPageId);
-                //page.addEventListener("webkitAnimationEnd", animateend);
-                //page.addEventListener("webkitAnimationStart", animatestart);
-                //replaceState(state);
-              });
-            }
-          }, function () {
-          }, true);
-        } else {
-          $.slice.call(elPages).forEach(function (page, i) {
-            var id = page.id;
-            if (!page.getAttribute('data-title')) {
-              page.setAttribute('data-title',  document.title);
-            }
-            if (i === oHistory.index) {
-              page.classList.remove('out');
-              page.classList.add('in');
-              events.pageFirstInit.forEach(function (n) {
-                if (n.pageName === id || n.pageName === void(0) || n.pageName === null) {
-                  n.callback(page);
-                }
-              });
-              events.pageInit.forEach(function (n) {
-                if (n.pageName === id || n.pageName === void(0) || n.pageName === null) {
-                  n.callback(page);
-                }
-              });
-            } else {
-              page.classList.remove('in');
-              page.classList.add('out');
-            }
-            oHistory.history.push(id);
-            page.addEventListener("webkitAnimationEnd", animateend);
-            page.addEventListener("webkitAnimationStart", animatestart);
-          });
-          if (!state) {
-            state = $.getState('#' + oHistory.history[0]);
-          }
-          state.time = new Date();
-          state.title = document.title;
-          visiter.push(state);
-          $.replaceState(state);
+          initOk();
         }
 
         return self;
@@ -482,55 +553,71 @@ define(function () {
           break;
         default :
           state = $.getState(href);
-          toPageId = state.pageId;
-          oHistory.history.forEach(function (n, i) {
-            if (n === toPageId) {
-              toPageIndex = i;
-              return false;
-            }
-          });
-          if (toPageIndex > -1 && (reload == null || reload == "false")) {
-            $.switchPage(state, toPageId, toPageIndex);
-          } else {
-            var node = document.getElementById(toPageId);
-            if (node) {
-              node.parentNode.removeChild(node);
-            }
-            $.ajax({
-              url: href,
-              success: function (content) {
-                var doAjaxRender = ajaxRender;
-                events.ajaxRender.forEach(function (n) {
-                  if (n.pageName === toPageId) {
-                    doAjaxRender = n.callback;
-                  } else if (n.pageName === void(0) || n.pageName === null) {
-                    n.callback(document.getElementById(toPageId));
-                  }
-                });
-                doAjaxRender(content, function (content) {
-                  var titleContent = /<title[^>]*?>([\s\S]*?)<\/title>/.exec(content),
-                    bodyContent = /<body[^>]*?>([\s\S]*?)<\/body>/.exec(content);
+          switch (state.action) {
+            case 'anchor':
+              target.classList.add('active');
+              $.siblings(target).forEach(function(node) {
+                node.classList.remove('active');
+              });
+              var $content = document.querySelector(href);
+              $content.style.display = 'block';
+              $.siblings($content).forEach(function(node) {
+                node.style.display = 'none';
+              });
 
-                  if (bodyContent) {
-                    bodyContent = bodyContent[1];
-                  } else {
-                    bodyContent = content;
+              return event.preventDefault();
+              break;
+            default :
+              toPageId = state.pageId;
+              oHistory.history.forEach(function (n, i) {
+                if (n === toPageId) {
+                  toPageIndex = i;
+                  return false;
+                }
+              });
+              if (toPageIndex > -1 && (reload == null || reload == "false")) {
+                $.switchPage(state, toPageId, toPageIndex);
+              } else {
+                var node = document.getElementById(toPageId);
+                if (node) {
+                  node.parentNode.removeChild(node);
+                }
+                $.ajax({
+                  url: href,
+                  success: function (content) {
+                    var doAjaxRender = ajaxRender;
+                    events.ajaxRender.forEach(function (n) {
+                      if (n.pageName === toPageId) {
+                        doAjaxRender = n.callback;
+                      } else if (n.pageName === void(0) || n.pageName === null) {
+                        n.callback(document.getElementById(toPageId));
+                      }
+                    });
+                    doAjaxRender(content, function (content) {
+                      var titleContent = /<title[^>]*?>([\s\S]*?)<\/title>/.exec(content),
+                        bodyContent = /<body[^>]*?>([\s\S]*?)<\/body>/.exec(content);
+
+                      if (bodyContent) {
+                        bodyContent = bodyContent[1];
+                      } else {
+                        bodyContent = content;
+                      }
+                      $.append(document.body, bodyContent);
+                      elMask.style.visibility = 'hidden';
+                      oHistory.history.push(toPageId);
+                      toPageIndex = oHistory.history.length - 1;
+                      var page = document.getElementById(toPageId);
+                      if (titleContent) {
+                        page.setAttribute('data-title', titleContent[1]);
+                      }
+                      page.addEventListener("webkitAnimationEnd", animateend);
+                      page.addEventListener("webkitAnimationStart", animatestart);
+                      $.switchPage(state, toPageId, toPageIndex);
+                    });
                   }
-                  $.append(document.body, bodyContent);
-                  elMask.style.visibility = 'hidden';
-                  oHistory.history.push(toPageId);
-                  toPageIndex = oHistory.history.length - 1;
-                  var page = document.getElementById(toPageId);
-                  if (titleContent) {
-                    page.setAttribute('data-title', titleContent[1]);
-                  }
-                  page.addEventListener("webkitAnimationEnd", animateend);
-                  page.addEventListener("webkitAnimationStart", animatestart);
-                  $.switchPage(state, toPageId, toPageIndex);
-                });
+                }, function () {
+                }, true);
               }
-            }, function () {
-            }, true);
           }
           return event.preventDefault();
       }
@@ -540,6 +627,12 @@ define(function () {
   $.slice.call(elPages).forEach(function (page) {
     if (!page.getAttribute('data-title')) {
       page.setAttribute('data-title',  document.title);
+    }
+  });
+
+  window.addEventListener("DOMContentLoaded", function() {
+    if (hasInited == false) {
+      app.init();
     }
   });
 

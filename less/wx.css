@@ -28,7 +28,7 @@ body {
   width: 48px;
   height: 48px;
   background-size: 48px 144px;
-  background-image: url(../imgs/icon-header.png);
+  background-image: url('../imgs/wx/icon-header.png');
 }
 .icon-add {
   background-position: 0 -48px;
@@ -50,7 +50,7 @@ body {
 .icon-contact,
 .icon-find,
 .icon-me {
-  background-image: url('../imgs/icon-footer.png');
+  background-image: url('../imgs/wx/icon-footer.png');
   background-size: 35px 280px;
   text-align: center;
   height: 35px;
@@ -75,7 +75,7 @@ body {
 .icon-bottle,
 .icon-shopping,
 .icon-game {
-  background-image: url('../imgs/icon-find.png');
+  background-image: url('../imgs/wx/icon-find.png');
   -webkit-background-size: 28px 210px;
   background-size: 28px 210px;
   width: 28px;
@@ -103,7 +103,7 @@ body {
 .icon-storage,
 .icon-wallet,
 .icon-settings {
-  background-image: url('../imgs/icon-me.png');
+  background-image: url('../imgs/wx/icon-me.png');
   -webkit-background-size: 28px 120px;
   background-size: 28px 120px;
   width: 28px;
@@ -127,6 +127,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
+  z-index: 1;
   overflow: hidden;
 }
 .header h1 {

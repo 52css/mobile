@@ -567,7 +567,7 @@
     if (fnEmpty(base)) {
       base = commonConfig.base || location.href;
     }
-    base = base.split('/').slice(0, -1).join('/') + '/';
+    base = base.split('#')[0].split('/').slice(0, -1).join('/') + '/';
     // a/./b ==> a/b
     absolutePath = (base + relativePath).replace(DOT_RE, '/');
     // a/b/c/../../d  ==>  a/b/../d  ==>  a/d
@@ -773,7 +773,6 @@
    * @param factory
    */
   function fnDefine(id, deps, factory) {
-    //debugger;
     var args = arguments,
       idType = fnType(id),
       objDeps = {},
@@ -1005,7 +1004,7 @@
     }),
     require: fnExtend(fnRequire, {
       config: fnConfig,
-      version: '0.0.2',
+      version: '0.0.3',
       async: fnRequire,
       requireList: requireList
     })

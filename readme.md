@@ -8,32 +8,49 @@
   <!-- html结构 -->
   <div id="pageHome" class="page out" data-title="首页">
     <ul>
-      <li><a href="#page1?id=1">页面1</a></li>
-      <li><a href="#page2?id=2">页面2</a></li>
-      <li><a href="#page3?id=3">页面3</a></li>
+      <li><a href="#!/page1?id=1">页面1</a></li>
+      <li><a href="#!/page2?id=2">页面2</a></li>
+      <li><a href="#!/page3?id=3">页面3</a></li>
       <li><a href="ajax.html" data-reload="true">ajax</a></li>
       <li><a href="ajax1.html">ajax1</a></li>
       <li><a href="ajax2.html">ajax2</a></li>
     </ul>
   </div>
   <div id="page1" class="page out" data-title="page1">
-    <a href="#pageHome" data-rel="back">&laquo;返回1</a>
-    <!--<ul>-->
-      <!--<li><a href="#page2">页面2</a></li>-->
-      <!--<li><a href="#page3">页面3</a></li>-->
-    <!--</ul>-->
+    <a href="#!/pageHome" data-rel="back">&laquo;返回1</a>
   </div>
   <!-- 引用script -->
   <script src="js/lib/moblie.js"></script>
 ```
 
-### api
-  + 页面前进(后退)-链接到本页 `<a href="#page1?id=1">页面1</a>`
+### api-页面切换
+  + 页面前进(后退)-链接到本页 `<a href="#!/page1?id=1">页面1</a>`
   + 页面前进(后退)-链接到ajax页面 `<a href="ajax1.html">ajax1</a>`
-  + -页面前进(后退)-通过js来链接到本页 `mobile.go("#page1?id=1")`
+  + -页面前进(后退)-通过js来链接到本页 `mobile.go("#!/page1?id=1")`
   + -页面前进(后退)-通过js到ajax页面  `mobile.go("ajax1.html")`
   + -页面前进-前n页 `moblie.go(n)`
   + -页面后退-后n页 `mobile.go(-n)`
+
+### api-tab切换
+  + tab切换 `<a href="#tabId">tabId</a>`当点击相当于 `$(this).addClass('active').siblings().removeClass('active'); $(this.href).show().siblings().hide();`
+
+### api-js页面初始化绑定事件
+  + pageFirstInit 页面第一次载入
+  + pageInit 每次页面载入
+  + pageBeforeAnimate 页面进入动作之前
+  + pageAfterAnimate 页面进入动作之后
+  + pageOut 页面离开
+
+```js
+  // 每个页面都调用
+  mobile.on('pageFirstInit', function(page) {
+    console.log(page.id);
+  });
+  // 单独一个页面调用
+    mobile.on('pageFirstInit', 'page1', function(page) {
+      console.log(page.id);
+    });
+```
 
 ### 兼容
 ie10+ ff webkit（chrome opera safari）
