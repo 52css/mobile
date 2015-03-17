@@ -31,9 +31,6 @@
   + -页面前进-前n页 `moblie.go(n)`
   + -页面后退-后n页 `mobile.go(-n)`
 
-### api-tab切换
-  + tab切换 `<a href="#tabId">tabId</a>`当点击相当于 `$(this).addClass('active').siblings().removeClass('active'); $(this.href).show().siblings().hide();`
-
 ### api-js页面初始化绑定事件
   + pageFirstInit 页面第一次载入
   + pageInit 每次页面载入
@@ -47,9 +44,50 @@
     console.log(page.id);
   });
   // 单独一个页面调用
-    mobile.on('pageFirstInit', 'page1', function(page) {
-      console.log(page.id);
+  mobile.on('pageFirstInit', 'page1', function(page) {
+    console.log(page.id);
+  });
+```
+
+### api-插件-tab切换
+  + tab切换 `<a href="#tabId">tabId</a>`相当于
+
+```js
+    $(document).on('click', this, function() {
+      $(this).addClass('active').siblings().removeClass('active');
+      $(this.href).show().siblings().hide();
+      return false;
     });
+```
+
+### api-插件-toggle-class切换样式
+  + data-toggle-class切换  `<dl data-toggle-class="open"></dl>` 相当于
+
+```js
+  $(document).on('click', this, function() {
+    $(this).toggleClass('open');
+    return false;
+  });
+```
+
+### api-插件-add-class切换样式
+  + data-add-class切换  `<dl data-add-class="open"></dl>` 相当于
+
+```js
+  $(document).on('click', this, function() {
+    $(this).addClass('open');
+    return false;
+  });
+```
+
+### api-插件-remove-class切换样式
+  + data-remove-class切换  `<dl data-remove-class="open"></dl>` 相当于
+
+```js
+  $(document).on('click', this, function() {
+    $(this).removeClass('open');
+    return false;
+  });
 ```
 
 ### 兼容

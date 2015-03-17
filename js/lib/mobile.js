@@ -9,6 +9,15 @@ define(function () {
     hasInited = false,
     $ = {
       slice: [].slice,
+      isJSON: function(text) {
+        if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu]/g, '@').
+            replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+            replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+          return true;
+        } else {
+          return false;
+        }
+      },
       makeArray: function(obj) {
         var ret = [];
         if (obj !== null) {
@@ -21,21 +30,25 @@ define(function () {
         }
         return ret;
       },
-      closest: function(node, tag) {
+      closestByFilter: function(node, filter) {
         var parentNode = node.parentNode;
         while (parentNode) {
-          if (tag) {
-            var tagParent = parentNode.tagName.toLowerCase();
-            if (tagParent === tag) {
-              return parentNode;
-            } else if (tagParent === 'body') {
-              return null;
-            }
-          } else {
-            return parentNode;
+          if (parentNode.tagName.toLowerCase() === 'body') {
+            return null;
+          }
+          var temp = filter(parentNode);
+          if (temp) {
+            return temp;
           }
           parentNode = parentNode.parentNode;
         }
+      },
+      closest: function(node, tag) {
+        return $.closestByFilter(node, function(node) {
+          if (tag && node.tagName.toLowerCase() === tag.toLowerCase()) {
+            return node;
+          }
+        });
       },
       siblings: function(node) {
         function getChildren(n, skipMe){
@@ -408,7 +421,102 @@ define(function () {
         return app;
       },
       ajax: $.ajax,
-      bindEvent: function() {
+      binds: {
+        tabs: function() {
+          document.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!target) return;
+            if (target.tagName.toLowerCase() != "a" && !(target = $.closest(target, 'a'))) {
+              return;
+            }
+            var
+              href = target.getAttribute('href'),
+              rel = target.getAttribute('data-rel'),
+              state;
+
+            if (href && !/^javascript/.test(href) && rel !== 'external') {
+              state = $.getState(href);
+
+              if ( state.action === 'anchor' ) {
+                target.classList.add('active');
+                $.siblings(target).forEach(function(node) {
+                  node.classList.remove('active');
+                });
+                var $content = document.querySelector(href);
+                $content.style.display = 'block';
+                $.siblings($content).forEach(function(node) {
+                  node.style.display = 'none';
+                });
+
+                return event.preventDefault();
+              }
+            }
+          });
+        },
+        toggleClass: function() {
+          document.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!target) return;
+
+            if ( (target.getAttribute('data-toggle-class') == null || target.getAttribute('data-toggle-class') == '') && !(target = $.closestByFilter(target, function(node) {
+                if (node.getAttribute('data-toggle-class') != null && node.getAttribute('data-toggle-class') != '') {
+                  return node;
+                }
+              }))) {
+              return;
+            }
+            var toggleClass = target.getAttribute('data-toggle-class');
+
+            if (toggleClass) {
+              if (target.classList.contains(toggleClass)) {
+                target.classList.remove(toggleClass);
+              } else {
+                target.classList.add(toggleClass);
+              }
+              return event.preventDefault();
+            }
+          });
+        },
+        addClass: function() {
+          document.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!target) return;
+
+            if ( (target.getAttribute('data-add-class') == null || target.getAttribute('data-add-class') == '') && !(target = $.closestByFilter(target, function(node) {
+                if (node.getAttribute('data-add-class') != null && node.getAttribute('data-add-class') != '') {
+                  return node;
+                }
+              }))) {
+              return;
+            }
+            var addClass = target.getAttribute('data-add-class');
+
+            if (addClass) {
+              target.classList.add(addClass);
+              return event.preventDefault();
+            }
+          });
+        },
+        removeClass: function() {
+          document.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!target) return;
+
+            if ( (target.getAttribute('data-remove-class') == null || target.getAttribute('data-remove-class') == '') && !(target = $.closestByFilter(target, function(node) {
+                if (node.getAttribute('data-remove-class') != null && node.getAttribute('data-remove-class') != '') {
+                  return node;
+                }
+              }))) {
+              return;
+            }
+            var removeClass = target.getAttribute('data-remove-class');
+
+            if (removeClass) {
+              target.classList.remove(removeClass);
+              return event.preventDefault();
+            }
+          });
+        }
       },
       init: function () {
         hasInited = true;
@@ -448,7 +556,11 @@ define(function () {
             visiter.push(stateByHash);
             $.replaceState(stateByHash);
           };
-        self.bindEvent();
+        Object.keys(self.binds).forEach(function(key) {
+          var fn = self.binds[key];
+          fn();
+        });
+
         if (stateByHash.action) {
           switch (stateByHash.action) {
             case 'pageId':
@@ -461,10 +573,10 @@ define(function () {
               });
               initOk();
               break;
-            case 'anchor':
-              oHistory.index = 0;
-              initOk();
-              break;
+            //case 'anchor':
+            //  oHistory.index = 0;
+            //  initOk();
+            //  break;
             case 'pageUrl':
               var toPageId = stateByHash.pageId;
               $.ajax({
@@ -553,71 +665,57 @@ define(function () {
           break;
         default :
           state = $.getState(href);
-          switch (state.action) {
-            case 'anchor':
-              target.classList.add('active');
-              $.siblings(target).forEach(function(node) {
-                node.classList.remove('active');
-              });
-              var $content = document.querySelector(href);
-              $content.style.display = 'block';
-              $.siblings($content).forEach(function(node) {
-                node.style.display = 'none';
-              });
-
-              return event.preventDefault();
-              break;
-            default :
-              toPageId = state.pageId;
-              oHistory.history.forEach(function (n, i) {
-                if (n === toPageId) {
-                  toPageIndex = i;
-                  return false;
-                }
-              });
-              if (toPageIndex > -1 && (reload == null || reload == "false")) {
-                $.switchPage(state, toPageId, toPageIndex);
-              } else {
-                var node = document.getElementById(toPageId);
-                if (node) {
-                  node.parentNode.removeChild(node);
-                }
-                $.ajax({
-                  url: href,
-                  success: function (content) {
-                    var doAjaxRender = ajaxRender;
-                    events.ajaxRender.forEach(function (n) {
-                      if (n.pageName === toPageId) {
-                        doAjaxRender = n.callback;
-                      } else if (n.pageName === void(0) || n.pageName === null) {
-                        n.callback(document.getElementById(toPageId));
-                      }
-                    });
-                    doAjaxRender(content, function (content) {
-                      var titleContent = /<title[^>]*?>([\s\S]*?)<\/title>/.exec(content),
-                        bodyContent = /<body[^>]*?>([\s\S]*?)<\/body>/.exec(content);
-
-                      if (bodyContent) {
-                        bodyContent = bodyContent[1];
-                      } else {
-                        bodyContent = content;
-                      }
-                      $.append(document.body, bodyContent);
-                      elMask.style.visibility = 'hidden';
-                      oHistory.history.push(toPageId);
-                      toPageIndex = oHistory.history.length - 1;
-                      var page = document.getElementById(toPageId);
-                      if (titleContent) {
-                        page.setAttribute('data-title', titleContent[1]);
-                      }
-                      page.addEventListener("webkitAnimationEnd", animateend);
-                      page.addEventListener("webkitAnimationStart", animatestart);
-                      $.switchPage(state, toPageId, toPageIndex);
-                    });
-                  }
-                }, function () {
-                }, true);
+          if (state.action !== 'anchor') {
+            toPageId = state.pageId;
+            oHistory.history.forEach(function (n, i) {
+              if (n === toPageId) {
+                toPageIndex = i;
+                return false;
               }
+            });
+            if (toPageIndex > -1 && (reload == null || reload == "false")) {
+              $.switchPage(state, toPageId, toPageIndex);
+            } else {
+              var node = document.getElementById(toPageId);
+              if (node) {
+                node.parentNode.removeChild(node);
+              }
+              $.ajax({
+                url: href,
+                success: function (content) {
+                  var doAjaxRender = ajaxRender;
+                  events.ajaxRender.forEach(function (n) {
+                    if (n.pageName === toPageId) {
+                      doAjaxRender = n.callback;
+                    } else if (n.pageName === void(0) || n.pageName === null) {
+                      n.callback(document.getElementById(toPageId));
+                    }
+                  });
+                  doAjaxRender(content, function (content) {
+                    var titleContent = /<title[^>]*?>([\s\S]*?)<\/title>/.exec(content),
+                      bodyContent = /<body[^>]*?>([\s\S]*?)<\/body>/.exec(content);
+
+                    if (bodyContent) {
+                      bodyContent = bodyContent[1];
+                    } else {
+                      bodyContent = content;
+                    }
+                    $.append(document.body, bodyContent);
+                    elMask.style.visibility = 'hidden';
+                    oHistory.history.push(toPageId);
+                    toPageIndex = oHistory.history.length - 1;
+                    var page = document.getElementById(toPageId);
+                    if (titleContent) {
+                      page.setAttribute('data-title', titleContent[1]);
+                    }
+                    page.addEventListener("webkitAnimationEnd", animateend);
+                    page.addEventListener("webkitAnimationStart", animatestart);
+                    $.switchPage(state, toPageId, toPageIndex);
+                  });
+                }
+              }, function () {
+              }, true);
+            }
           }
           return event.preventDefault();
       }

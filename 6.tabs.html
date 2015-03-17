@@ -6,6 +6,11 @@
   <title>tabs 切换</title>
   <link rel="stylesheet" href="less/all.css"/>
   <link rel="stylesheet" href="less/tabs.css"/>
+  <style>
+    .open {
+      color: red;
+    }
+  </style>
 </head>
 
 <body>
@@ -60,6 +65,11 @@
         </div>
         <div id="page2" class="tab out">
           this is page2
+
+          <span data-toggle-class="open">
+            <div>bbb</div>
+            this is aaa
+          </span>
         </div>
         <div id="page3" class="tab out">
           this is page3

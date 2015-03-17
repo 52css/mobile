@@ -257,6 +257,50 @@ body {
 .icon-shfw {
   background-position: -36px 0px;
 }
+.icon-contactArrow {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  margin-top: -5px;
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: url(../imgs/qq/contact_arrow.jpg) no-repeat;
+  background-size: 10px auto;
+  -webkit-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+}
+.icon-hydt,
+.icon-fj,
+.icon-xqbl {
+  display: block;
+  width: 36px;
+  height: 36px;
+  margin: 16px auto 8px;
+  background: url(../imgs/qq/sprite_qzone.png) no-repeat;
+  background-size: 111px auto;
+}
+.icon-hydt {
+  width: 39px;
+}
+.icon-fj {
+  background-position: -39px 0px;
+}
+.icon-xqbl {
+  background-position: -75px 0px;
+}
+.icon-right-arrow {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  margin-top: -7px;
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: url(../imgs/qq/commListArrow.png) no-repeat;
+  background-size: 14px auto;
+}
 .btn-group {
   display: inline-block;
   vertical-align: middle;
@@ -434,6 +478,8 @@ body {
   height: 48px;
   background: #EBECED;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 .search-input {
   display: block;
@@ -504,7 +550,72 @@ body {
   background-color: #fff;
   height: 85px;
 }
-.dl-contact-list dd {
+.friend-list {
+  margin: 0;
+  background: #fff;
+}
+.friend-list-h5 {
+  padding-left: 10px;
+  line-height: 25px;
+  font-size: 12px;
+  color: #808080;
+  font-weight: 400;
+  margin: 0;
+}
+.friend-list > dt {
+  position: relative;
+  height: 44px;
+  line-height: 44px;
+  border-bottom: 1px solid #C8C7CC;
+  font-size: 15px;
+}
+.friend-list > dt > strong {
+  position: absolute;
+  left: 45px;
+  right: 100px;
+  top: 0;
+}
+.friend-list > dt > span {
+  float: right;
+  padding-right: 10px;
+  font-size: 12px;
+  color: #777;
+}
+.friend-list > dd {
   padding: 0;
   margin: 0;
+  display: none;
+}
+.friend-list.open > dt > .icon-contactArrow {
+  -webkit-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.friend-list.open > dd {
+  display: block;
+}
+.links-qzone {
+  margin-top: 20px;
+  border-top: 1px solid #DEDFE0;
+  background-color: #fff;
+}
+.links-qzone > .links-a {
+  padding: 8px 10px;
+  position: relative;
+  display: block;
+  border-bottom: 1px solid #DEDFE0;
+}
+.links-qzone > .links-a h5 {
+  display: block;
+  padding-top: 5px;
+  font-size: 15px;
+  color: #090909;
+  margin: 0;
+}
+.links-qzone-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 28px;
+  margin-right: 10px;
 }
