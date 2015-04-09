@@ -194,19 +194,3 @@
   order: 3;
 }
 /*flex container*/
-.bd-x {
-  background: repeat-x top left url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect fill='#c8c7cc' x='0' y='0' width='1' height='0.5'/></svg>");
-  height: 1px;
-  position: absolute;
-  left: 0;
-  width: 100%;
-  content: '';
-}
-.bd-y {
-  background: repeat-y top left url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect fill='#c8c7cc' x='0' y='0' width='0.5' height='1'/></svg>");
-  width: 1px;
-  position: absolute;
-  top: 0;
-  height: 100%;
-  content: '';
-}

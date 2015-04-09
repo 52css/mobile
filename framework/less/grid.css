@@ -22,8 +22,8 @@
 }
 .grid-wrap .grid .grid-col {
   float: left;
+  margin-bottom: 15px;
 }
 .grid-wrap .grid .grid-col .grid-in {
-  background: red;
   margin-right: 15px;
 }

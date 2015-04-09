@@ -336,7 +336,7 @@ define(function () {
     elMask = (function() {
       var elMask = document.getElementById('mask');
       if (!elMask) {
-        $.append(document.body, '<div id="mask" class="mask"><i class="loading"></i></div>');
+        $.append(document.body, '<div id="mask" class="mask"><i class="fa fa-spinner fa-pulse fa-2x"></i></div>');
         elMask = document.getElementById('mask');
       }
       return elMask;

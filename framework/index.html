@@ -11,9 +11,15 @@
 <body class=""> <!-- theme-red layout-dark -->
 <div id="home" class="page out">
   <header class="header">
-    <h1>
-      framework
-    </h1>
+    <div class="header-left">
+    </div>
+    <div class="header-center">
+      <h1 class="header-center-in">
+        framework
+      </h1>
+    </div>
+    <div class="header-right">
+    </div>
   </header>
   <main class="main">
     <box class="box box-xl">
@@ -24,10 +30,10 @@
         <li>
           <a href="alert.html" class="list-content">
             <!--<div class="list-media">-->
-              <!--<div class="fa-stack fa-lg theme-color-orange">-->
-                <!--<i class="fa fa-square fa-stack-2x"></i>-->
-                <!--<i class="fa fa-flag fa-stack-1x fa-inverse"></i>-->
-              <!--</div>-->
+            <!--<div class="fa-stack fa-lg theme-color-orange">-->
+            <!--<i class="fa fa-square fa-stack-2x"></i>-->
+            <!--<i class="fa fa-flag fa-stack-1x fa-inverse"></i>-->
+            <!--</div>-->
             <!--</div>-->
             <div class="list-inner">
               <div class="list-title">
@@ -87,6 +93,30 @@
             </div>
           </a>
         </li>
+        <li>
+          <a href="badge.html" class="list-content">
+            <div class="list-inner">
+              <div class="list-title">
+                Badge
+              </div>
+              <div class="list-after">
+                <i class="fa fa-lg fa-angle-right"></i>
+              </div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="theme.html" class="list-content">
+            <div class="list-inner">
+              <div class="list-title">
+                Theme
+              </div>
+              <div class="list-after">
+                <i class="fa fa-lg fa-angle-right"></i>
+              </div>
+            </div>
+          </a>
+        </li>
       </ul>
     </box>
   </main>
@@ -106,7 +136,24 @@
 <script>
   require(['../js/lib/mobile', '../js/lib/fastclick'], function(mobile, fastclick) {
     fastclick.attach(document.body);
-    mobile.init();
+    mobile
+      .on('pageFirstInit', 'theme', function(page) {
+        var body = document.body;
+        ['layout', 'theme'].forEach(function(actionName) {
+          [].slice.call(page.querySelectorAll('[data-' + actionName + ']')).forEach(function(node) {
+            var className = node.getAttribute('data-' + actionName + '');
+            node.addEventListener('click', function() {
+              [].slice.call(body.classList).forEach(function(className) {
+                if (new RegExp('^' + actionName + '\\-').test(className)) {
+                  body.classList.remove(className);
+                }
+              });
+              body.classList.add('' + actionName + '-' + className);
+            }, false);
+          });
+        });
+      })
+      .init();
   });
 </script>
 </body>
