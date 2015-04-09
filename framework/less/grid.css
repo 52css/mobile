@@ -1,0 +1,29 @@
+.grid-wrap {
+  overflow: hidden;
+  margin: 0 15px;
+}
+.grid-wrap .grid {
+  margin-right: -15px;
+}
+.grid-wrap .grid-1 .grid-col {
+  width: 100%;
+}
+.grid-wrap .grid-2 .grid-col {
+  width: 50%;
+}
+.grid-wrap .grid-3 .grid-col {
+  width: 33.33333333%;
+}
+.grid-wrap .grid-4 .grid-col {
+  width: 25%;
+}
+.grid-wrap .grid-5 .grid-col {
+  width: 20%;
+}
+.grid-wrap .grid .grid-col {
+  float: left;
+}
+.grid-wrap .grid .grid-col .grid-in {
+  background: red;
+  margin-right: 15px;
+}

@@ -13,6 +13,7 @@ body {
   -webkit-user-select: none;
   user-select: none;
   -ms-touch-action: none;
+  font-size: 14px;
 }
 /* construction */
 html,
@@ -202,7 +203,7 @@ li {
   top: 0;
 }
 .out {
-  display: none;
+  visibility: hidden;
 }
 .in,
 .out {

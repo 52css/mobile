@@ -812,7 +812,6 @@
 		return new FastClick(layer, options);
 	};
 
-
 	if (typeof define == 'function' && (typeof define.amd == 'object' && define.amd || typeof define.cmd == 'object' && define.cmd)) {
 
 		// AMD. Register as an anonymous module.
