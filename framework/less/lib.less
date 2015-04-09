@@ -1,4 +1,12 @@
 // lib
+.clearfix {
+  *zoom: 1;
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
 .ell {
   overflow: hidden;
   text-overflow: ellipsis;

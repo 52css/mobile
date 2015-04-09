@@ -57,7 +57,7 @@ define(function () {
             if ( n.nodeType == 1 && n != skipMe)
               r.push( n );
           return r;
-        };
+        }
         return getChildren(node.parentNode.firstChild, node);
       },
       ajax: function(arr, callback, showMask) {
@@ -141,13 +141,13 @@ define(function () {
               beforeSuccess.apply(opts, arguments);
             }
             rtv[opts.url] = data;
-          }
+          };
           opts.error = function () {
             if (beforeError) {
               beforeError.apply(opts, arguments);
             }
             rtv[opts.url] = {};
-          }
+          };
           opts.complete = function () {
             myIndex++;
             if (myIndex === myLen) {
@@ -158,7 +158,7 @@ define(function () {
                 elMask.style.visibility = 'hidden';
               }
             }
-          }
+          };
           oneAjax(opts);
         })
 

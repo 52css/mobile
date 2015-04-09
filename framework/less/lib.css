@@ -1,3 +1,11 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:after {
+  content: '';
+  display: table;
+  clear: both;
+}
 .ell {
   overflow: hidden;
   text-overflow: ellipsis;

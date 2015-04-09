@@ -27,3 +27,6 @@
 .grid-wrap .grid .grid-col .grid-in {
   margin-right: 15px;
 }
+.grid-test .grid-in {
+  border: 1px solid;
+}
