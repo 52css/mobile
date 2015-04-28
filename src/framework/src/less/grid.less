@@ -1,0 +1,44 @@
+.grid-wrap {
+  overflow: hidden;
+  margin: 0 15px;
+  .grid {
+    margin-right: -15px;
+    &-1 {
+      .grid-col {
+        width: 100%;
+      }
+    }
+    &-2 {
+      .grid-col {
+        width: 100/2%;
+      }
+    }
+    &-3 {
+      .grid-col {
+        width: 100/3%;
+      }
+    }
+    &-4 {
+      .grid-col {
+        width: 100/4%;
+      }
+    }
+    &-5 {
+      .grid-col {
+        width: 100/5%;
+      }
+    }
+    .grid-col {
+      float: left;
+      margin-bottom: 15px;
+      .grid-in {
+        //background: red;
+        margin-right: 15px;
+      }
+    }
+  }
+}
+.grid-test .grid-in {
+  border: 1px solid;
+  .bd-red;
+}

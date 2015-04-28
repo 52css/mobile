@@ -1,0 +1,66 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1.0,user-scalable=no"><title>基本切换</title><link rel=stylesheet href=less/all.css><style>
+    body > header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right:0;
+      height: 50px;
+      line-height: 50px;
+      background-color: #000;
+      color: #fff;
+    }
+    body > footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right:0;
+      height: 50px;
+      line-height: 50px;
+      border-top: 1px solid #000;
+    }
+    .content {
+      position: absolute;
+      top: 50px;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+      overflow: auto;
+    }
+    .active {
+      color: red;
+    }
+  </style></head><body><header>this is header</header><section id=home class="page out"><div class=content>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br><a href=#page1>页面1</a></div></section><section id=page1 class="page out"><div class=content>this is page1 content</div></section><section id=page2 class="page out"><div class=content>this is page2 content</div></section><section id=page3 class="page out"><div class=content>this is page3 content</div></section><footer><a href=#home>home</a> <a href=#page1>页面1</a> <a href=#page2>页面2</a> <a href=#page3>页面3</a></footer><section id=mask class=mask><i class=loading></i></section><script src=js/lib/require.js></script><script>
+  require(['./js/lib/mobile', './js/lib/fastclick', './js/page1'], function(mobile, fastclick, page1) {
+    var footerA = document.querySelectorAll('body > footer > a');
+    fastclick.attach(document.body);
+    page1.init();
+    mobile
+      .on('pageFirstInit', function(page) {
+        console.log(page.id + 'firstInit');
+      })
+      .on('pageInit', function(page) {
+        console.log(page.id + 'pageInit');
+      })
+      .on('pageBeforeAnimate', function(page) {
+        console.log(page.id + 'pageBeforeAnimate');
+      })
+      .on('pageAfterAnimate', function(page) {
+        console.log(page.id + 'pageAfterAnimate');
+      })
+      .on('pageOut', function(page) {
+        console.log(page.id + 'pageOut');
+      })
+      .on('pageInit', function(page) {
+        var id = page.id,
+          pageIds = ['home', 'page1', 'page2', 'page3'];
+        pageIds.forEach(function(n, i) {
+          if (id === n) {
+            footerA[i].classList.add('active');
+          } else {
+            footerA[i].classList.remove('active');
+          }
+        })
+      })
+      .init();
+  });
+</script></body></html>

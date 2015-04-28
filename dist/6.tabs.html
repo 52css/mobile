@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1.0,user-scalable=no"><title>tabs 切换</title><link rel=stylesheet href=less/all.css><link rel=stylesheet href=less/tabs.css><style>
+    .open {
+      color: red;
+    }
+  </style></head><body><section id=home class="page out" data-title=首页><div class=content><section class=tabs><div class=tabs-contents><div id=page1 class="tab in"><ul class=list><li><a href=index.html data-rel=external>&laquo; 返回测试引导首页</a></li></ul>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br>this is page1<br></div><div id=page2 class="tab out">this is page2 <span data-toggle-class=open><div>bbb</div>this is aaa</span></div><div id=page3 class="tab out">this is page3</div><div id=page4 class="tab out">this is page4</div></div><div class=tabs-index><a href=#page1 class="tabs-a active">页面1</a> <a href=#page2 class=tabs-a>页面2</a> <a href=#page3 class=tabs-a>页面3</a> <a href=#page4 class=tabs-a>页面4</a></div></section></div></section><script src=js/lib/require.js></script><script>
+  require(['./js/lib/mobile', './js/lib/fastclick'], function(mobile, fastclick) {
+    fastclick.attach(document.body);
+    mobile.init();
+  });
+</script></body></html>

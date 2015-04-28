@@ -1,0 +1,4 @@
+/**
+ * Created by Ivan on 2014/12/4.
+ * Version: <%= version %>
+ */

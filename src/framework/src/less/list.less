@@ -1,0 +1,97 @@
+.list {
+  .theme-bg-ul;
+  .theme-gray-dark;
+  position: relative;
+  overflow: hidden;
+  &:before {
+    .theme-bd-dark-top;
+  }
+  &:after {
+    .theme-bd-dark-bottom;
+  }
+  &-group {
+    margin-top: -1px;
+  }
+  &-no-bd {
+    border-top: none;
+    border-bottom: none;
+  }
+  &-inset {
+    margin-left: 15px;
+    margin-right: 15px;
+    border-radius: 7px;
+    &:before {
+      display: none;
+    }
+    &:after {
+      display: none;
+    }
+  }
+  @media all and (min-width: 768px) {
+    &-tablet-inset {
+      margin-left: 15px;
+      margin-right: 15px;
+      border-radius: 7px;
+      &:before {
+        display: none;
+      }
+      &:after {
+        display: none;
+      }
+    }
+  }
+  &-content {
+    .df;
+    .fdr;
+    .aic;
+    .jcfs;
+    min-height: 44px;
+    padding-left: 15px;
+    & + ul {
+      position: relative;
+      padding-left: 45px;
+    }
+  }
+  &-media {
+    margin-right: 15px;
+  }
+  &-inner {
+    .f1;
+    .df;
+    .fdr;
+    .aic;
+    .jcsb;
+    min-height: 44px;
+    padding-right: 15px;
+    margin-bottom: -1px;
+    position: relative;
+    &:after {
+      .theme-bd-dark-bottom;
+    }
+  }
+  &-title {
+    font-size: 17px;
+    .ell;
+  }
+  &-after {
+    color: #8e8e93;
+    i {
+      margin-left: 7px;
+    }
+  }
+  &-divider {
+    font-size: 17px;
+    &:before {
+      .theme-bd-dark-top;
+    }
+    .theme-bg-divider;
+    margin-top: -1px;
+    padding: 4px 15px;
+    white-space: nowrap;
+    position: relative;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: #8E8E93;
+  }
+}

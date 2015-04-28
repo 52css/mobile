@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1.0,user-scalable=no"><title>单页面切换</title><link rel=stylesheet href=less/all.css><link rel=stylesheet href=less/fixed-header-footer-index.css></head><body><header><a href=javascript:history.back();>返回</a><h1>首页</h1></header><section id=home class="page out" data-title=首页><div class=content>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br>this is home content<br><a href=index.html data-rel=external class="btn btn-link">&laquo; 返回测试引导首页</a></div></section><section id=page1 class="page out" data-title=页面1><div class=content>this is page1 content</div></section><section id=page2 class="page out" data-title=页面2><div class=content>this is page2 content</div></section><section id=page3 class="page out" data-title=页面3><div class=content>this is page3 content</div></section><footer><a href=#!/home>home</a> <a href=#!/page1>页面1</a> <a href=#!/page2>页面2</a> <a href=#!/page3>页面3</a></footer><script src=js/lib/require.js></script><script>
+  require(['./js/lib/mobile', './js/lib/fastclick'], function(mobile, fastclick) {
+    var footerA = document.querySelectorAll('body > footer > a');
+
+    fastclick.attach(document.body);
+    mobile
+      .on('pageInit', function(page) {
+        var id = page.id,
+          pageIds = ['home', 'page1', 'page2', 'page3'];
+        pageIds.forEach(function(n, i) {
+          if (id === n) {
+            footerA[i].classList.add('active');
+          } else {
+            footerA[i].classList.remove('active');
+          }
+        })
+      })
+      .init();
+  });
+</script></body></html>
